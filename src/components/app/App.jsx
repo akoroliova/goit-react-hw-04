@@ -4,15 +4,17 @@ import "./App.css";
 import SearchBar from "../searchbar/SearchBar";
 import ImageGallery from "../imagegallery/ImageGallery";
 import Loader from "../loader/Loader";
+import ErrorMessage from "../errormessage/ErrorMessage.jsx";
 
 function App() {
   const [images, setImages] = useState({});
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
-    //try {const response = await axios.get("https://api.unsplash.com/"); console.log(response); }  catch (error) {console.error(error);}
     async function fetchImages() {
       try {
+        setError(false);
         setLoading(true);
         const response = await axios.get(
           "https://hn.algolia.com/api/v1/search?cat"
@@ -20,7 +22,8 @@ function App() {
         console.log(response);
         setImages(response.data.hits);
       } catch (error) {
-        // Тут будемо обробляти помилку
+        setImages({});
+        setError(true);
       } finally {
         setLoading(false);
       }
@@ -31,6 +34,8 @@ function App() {
   return (
     <>
       <SearchBar />
+
+      {error && <ErrorMessage />}
 
       {images.length > 0 && <ImageGallery items={images} />}
 
