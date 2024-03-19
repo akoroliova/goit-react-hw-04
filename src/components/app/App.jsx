@@ -1,12 +1,13 @@
 //import { useState } from "react";
+//import axios from 'axios';
 import "./App.css";
+import SearchBar from "../searchbar/SearchBar";
+//import { useState, useEffect } from "react";
 
 function App() {
   return (
     <>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <SearchBar />
     </>
   );
 }
