@@ -1,10 +1,10 @@
-export default function ImageCard({ url, title }) {
+export default function ImageCard({
+  src,
+  alt = "Alternative text placeholder is empty",
+}) {
   return (
     <div>
-      {/* <img src="" alt="" /> */}
-      <a href={url} target="_blank" rel="noreferrer noopener">
-        {title}
-      </a>
+      <img src={src} alt={alt} />
     </div>
   );
 }
