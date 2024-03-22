@@ -6,7 +6,9 @@ export const fetchImagesWithTopic = async (topic) => {
   const response = await axios.get(`/?query=${topic}`, {
     params: {
       client_id: "TXXLBjNA6Y0y8mIKWYg-j3lvWbiYzVBzOrZb1Ht508c",
+      per_page: 9,
+      //page: { page },
     },
   });
-  return response.data.results;
+  return response.data;
 };
