@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import SearchBar from "../searchbar/SearchBar";
 import ImageGallery from "../imagegallery/ImageGallery";
@@ -12,37 +12,40 @@ function App() {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [page, setPage] = useState(1);
+  const [query, setQuery] = useState();
+  const [showLoadMoreBtn, setShowLoadMoreBtn] = useState(false);
 
-  // // Function to control the group number
-  // const page = () => {};
-  // // Controls the number of groups in the collection. In our case total number of pages is calculated on frontend
-  // const totalPages = response.total_pages;
+  function onLoadMoreClick() {
+    setPage(page + 1);
+  }
 
-  // Використовуємо useEffect в масиві залежностей якого буде лише query і page
-  // useEffect(() => { if (!query) return; }, [query, page]);
+  useEffect(() => {
+    async function fetchData() {
+      const receivedData = await fetchImagesWithTopic(query, page);
+      const totalPages = receivedData.total_pages;
+      setShowLoadMoreBtn(totalPages && totalPages !== page);
+      const imagesArray = receivedData.results;
+      setImages([...images, ...imagesArray]);
+    }
+
+    if (query !== undefined) {
+      fetchData();
+    }
+  }, [query, page]);
 
   const handleSearch = async (topic) => {
     try {
       setImages([]);
+      setPage(1);
       setError(false);
+      setQuery(topic);
       setLoading(true);
-      const receivedData = await fetchImagesWithTopic(topic);
-      const imagesArray = receivedData.results;
-      setImages(imagesArray);
-      // Check the end of the collection to display an alert
-      // if (page > totalPages) {
-      //   return alert("We're sorry, there are no more posts to load");
-      // }
-      //page += 1;
     } catch (error) {
       setImages([]);
       setError(true);
     } finally {
       setLoading(false);
-      //Кнопка LoadMoreBtn має рендеритися лише тоді, коли є які-небудь завантажені зображення. Якщо масив зображень порожній, кнопка не рендериться.
-      // if (page > 1) {
-      //   //показувати кнопку Load More
-      // }
     }
   };
 
@@ -51,7 +54,7 @@ function App() {
       <SearchBar onSearch={handleSearch} />
       {error && <ErrorMessage />}
       {images.length > 0 && <ImageGallery items={images} />}
-      {images.length > 0 && <LoadMoreBtn />}
+      {showLoadMoreBtn && <LoadMoreBtn onButtonClick={onLoadMoreClick} />}
       {loading && <Loader />}
       <ImageModal />
     </>
