@@ -1,17 +1,54 @@
-export default function ImageModal() {
-  //Компонент ImageModal повинен рендеритися всередині компоненту App та отримувати через пропси з App всі необхідні дані та функції.
-  //Під час натискання на зображення галереї повинно відкриватися модальне вікно ImageModal з темним фоном, яке відображатиме зображення у великому форматі.
-  //Модальне вікно має бути налаштовано таким чином, щоб воно закривалося при натисканні на клавішу ESC або при кліку за його межами.
-  //Для реалізації функціональності модального вікна використовуй бібліотеку React Modal.
+import Modal from "react-modal";
+import css from "./ImageModal.module.css";
 
-  //Кожне зображення в масиві представлено об'єктом із великою кількістю інформації. В першу чергу тебе цікавлять посилання на різні за розміром версії зображення у властивості urls. Використовуй small версію для карток галереї, та regular версію для модального вікна.
+Modal.setAppElement("#root");
 
-  // Не обмежуйся завданням, використовуй дані із об'єктів, щоб відобразити більше цікавої інформації в модальному вікні. Наприклад, про автора зображення, кількість лайків, опис і т.д.
-  //created_at
-  //description
-  //likes
-  //tags
-  //user.username ("автор")
-  //links.download ("cкачати оригінал")
-  return <div></div>;
+const customStyles = {
+  overlay: {
+    backgroundColor: "#0000009c",
+  },
+  content: {
+    top: "50%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    marginRight: "-50%",
+    transform: "translate(-50%, -50%)",
+  },
+};
+
+export default function ImageModal({ modalIsOpen, closeModal, selectedImage }) {
+  return (
+    <Modal
+      isOpen={modalIsOpen}
+      onRequestClose={closeModal}
+      style={customStyles}
+      contentLabel="Image Modal Window"
+    >
+      <div className={css.imgContainer}>
+        <img
+          height="700px"
+          className={css.img}
+          id={selectedImage?.id}
+          src={selectedImage?.urls.regular}
+          alt={selectedImage?.alt_description}
+        />
+
+        <ul className={css.statContainer}>
+          <li className={css.stat}>
+            <span className={css.statName}>Author: </span>
+            <span className={css.statValue}>{selectedImage?.user.name}</span>
+          </li>
+          <li className={css.stat}>
+            <span className={css.statName}>Added on: </span>
+            <span className={css.statValue}>{selectedImage?.created_at}</span>
+          </li>
+          <li className={css.stat}>
+            <span className={css.statName}>Description: </span>
+            <span className={css.statValue}>{selectedImage?.description}</span>
+          </li>
+        </ul>
+      </div>
+    </Modal>
+  );
 }

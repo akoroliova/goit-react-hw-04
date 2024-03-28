@@ -1,21 +1,50 @@
 import ImageCard from "../imagecard/ImageCard.jsx";
-//import SimpleLightbox from "simplelightbox";
-import "simplelightbox/dist/simple-lightbox.min.css";
+import css from "./ImageGallery.module.css";
 
-export default function ImageGallery({ items }) {
-  // const lightboxInstance = new SimpleLightbox(".gallery .gallery-link", {
-  //   captions: true,
-  //   captionsData: "alt_description",
-  //   captionPosition: "bottom",
-  // });
+export default function ImageGallery({ items, openModal, setSelectedImage }) {
+  function selectImage(
+    id,
+    urls,
+    alt_description,
+    created_at,
+    description,
+    user
+  ) {
+    setSelectedImage({
+      id: id,
+      urls: urls,
+      alt: alt_description,
+      created_at: created_at,
+      description: description,
+      user: user,
+    });
+  }
 
   return (
-    <ul className="gallery">
-      {items.map(({ id, urls, alt_description }) => (
-        <li key={id}>
-          <ImageCard src={urls.small} alt={alt_description} />
-        </li>
-      ))}
+    <ul className={css.gallery}>
+      {items.map(
+        ({ id, urls, alt_description, created_at, description, user }) => (
+          <li
+            key={id}
+            onClick={() =>
+              selectImage(
+                id,
+                urls,
+                alt_description,
+                created_at,
+                description,
+                user
+              )
+            }
+          >
+            <ImageCard
+              src={urls.small}
+              alt={alt_description}
+              openModal={openModal}
+            />
+          </li>
+        )
+      )}
     </ul>
   );
 }

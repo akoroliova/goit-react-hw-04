@@ -15,6 +15,16 @@ function App() {
   const [page, setPage] = useState(1);
   const [query, setQuery] = useState();
   const [showLoadMoreBtn, setShowLoadMoreBtn] = useState(false);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState();
+
+  function openModal() {
+    setModalIsOpen(true);
+  }
+
+  function closeModal() {
+    setModalIsOpen(false);
+  }
 
   function onLoadMoreClick() {
     setPage(page + 1);
@@ -22,11 +32,20 @@ function App() {
 
   useEffect(() => {
     async function fetchData() {
-      const receivedData = await fetchImagesWithTopic(query, page);
-      const totalPages = receivedData.total_pages;
-      setShowLoadMoreBtn(totalPages && totalPages !== page);
-      const imagesArray = receivedData.results;
-      setImages([...images, ...imagesArray]);
+      try {
+        setLoading(true);
+        setError(false);
+        const receivedData = await fetchImagesWithTopic(query, page);
+        const totalPages = receivedData.total_pages;
+        setShowLoadMoreBtn(totalPages && totalPages !== page);
+        const imagesArray = receivedData.results;
+        setImages([...images, ...imagesArray]);
+      } catch (error) {
+        setImages([]);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
     }
 
     if (query !== undefined) {
@@ -35,28 +54,29 @@ function App() {
   }, [query, page]);
 
   const handleSearch = async (topic) => {
-    try {
-      setImages([]);
-      setPage(1);
-      setError(false);
-      setQuery(topic);
-      setLoading(true);
-    } catch (error) {
-      setImages([]);
-      setError(true);
-    } finally {
-      setLoading(false);
-    }
+    setImages([]);
+    setPage(1);
+    setQuery(topic);
   };
 
   return (
     <>
       <SearchBar onSearch={handleSearch} />
       {error && <ErrorMessage />}
-      {images.length > 0 && <ImageGallery items={images} />}
-      {showLoadMoreBtn && <LoadMoreBtn onButtonClick={onLoadMoreClick} />}
+      {images.length > 0 && (
+        <ImageGallery
+          items={images}
+          openModal={openModal}
+          setSelectedImage={setSelectedImage}
+        />
+      )}
       {loading && <Loader />}
-      <ImageModal />
+      {showLoadMoreBtn ? <LoadMoreBtn onButtonClick={onLoadMoreClick} /> : null}
+      <ImageModal
+        modalIsOpen={modalIsOpen}
+        closeModal={closeModal}
+        selectedImage={selectedImage}
+      />
     </>
   );
 }
