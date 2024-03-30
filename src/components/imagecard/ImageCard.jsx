@@ -6,8 +6,8 @@ export default function ImageCard({
   openModal,
 }) {
   return (
-    <div onClick={openModal} className={css.imageCardContainer}>
-      <img src={src} alt={alt} className={css.image} />
+    <div className={css.imageCardContainer}>
+      <img src={src} alt={alt} className={css.image} onClick={openModal} />
     </div>
   );
 }
